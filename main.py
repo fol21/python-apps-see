@@ -46,6 +46,7 @@ import requests
 # %matplotlib inline
 from PIL import Image
 from io import BytesIO
+import json
 
 # Replace <Subscription Key> with your valid subscription key.
 subscription_key = "9d5a6f15631142808a154f9916f0880a"
@@ -73,6 +74,5 @@ params = {'visualFeatures': 'Categories,Description,Color'}
 response = requests.post(
     analyze_url, headers=headers, params=params, data=image_data)
 response.raise_for_status()
-
 analysis = response.json()
-print(analysis)
+print(json.dumps(analysis, indent=1))
