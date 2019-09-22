@@ -48,6 +48,8 @@ from PIL import Image
 from io import BytesIO
 import json
 
+from src.computer_vision.RESTConfig import analyze, detect, ocr
+
 # Replace <Subscription Key> with your valid subscription key.
 subscription_key = "9d5a6f15631142808a154f9916f0880a"
 assert subscription_key
@@ -59,20 +61,34 @@ assert subscription_key
 # Free trial subscription keys are generated in the "westcentralus" region.
 # If you use a free trial subscription key, you shouldn't need to change
 # this region.
-vision_base_url = "https://fol-computer-vision.cognitiveservices.azure.com/vision/v2.0/"
+vision_base_url = "https://fol-computer-vision.cognitiveservices.azure.com"
 
-analyze_url = vision_base_url + "analyze"
+analyze_url = vision_base_url + "/vision/v2.0/analyze"
 
 # Set image_path to the local path of an image that you want to analyze.
 image_path = "C:\\Users\\fol\\Downloads\\dog.jpg"
+image_path2 = "C:\\Users\\fol\\Downloads\\testocr.png"
 
 # Read the image into a byte array
 image_data = open(image_path, "rb").read()
-headers = {'Ocp-Apim-Subscription-Key': subscription_key,
-           'Content-Type': 'application/octet-stream'}
-params = {'visualFeatures': 'Categories,Description,Color'}
-response = requests.post(
-    analyze_url, headers=headers, params=params, data=image_data)
-response.raise_for_status()
-analysis = response.json()
+image_data2 = open(image_path2, "rb").read()
+# headers = {'Ocp-Apim-Subscription-Key': subscription_key,
+#            'Content-Type': 'application/octet-stream'}
+# params = {'visualFeatures': 'Categories,Description,Color,'}
+# response = requests.post(
+#     analyze_url, headers=headers, params=params, data=image_data)
+# response.raise_for_status()
+
+# analysis = analyze(
+#     data=image_data,
+#     credentials={'base_url': vision_base_url, 'subscription_key': subscription_key},
+#     features_list=['Categories', 'Description', 'Color'])
+# analysis = detect(
+#     data=image_data,
+#     credentials={'base_url': vision_base_url, 'subscription_key': subscription_key})
+analysis = ocr(
+    data=image_data2,
+    credentials={'base_url': vision_base_url, 'subscription_key': subscription_key},
+    language='en')
+
 print(json.dumps(analysis, indent=1))
