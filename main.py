@@ -95,6 +95,6 @@ analysis = analyze(
 
 # print(json.dumps(analysis['description']['tags'], indent=1))
 
-dataAccess = FeatureCRUD('mongodb://admin:see2019@ds035747.mlab.com:35747/see-db-2019','see-db-2019')
+dataAccess = FeatureCRUD('mongodb://admin:see2019@ds035747.mlab.com:35747/see-db-2019?retryWrites=false','see-db-2019')
 
-dataAccess.insertAnalysis('img1', base64.b64encode(image_data), analysis)
+dataAccess.deleteAnalysis('img1')
