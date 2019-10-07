@@ -47,8 +47,10 @@ import requests
 from PIL import Image
 from io import BytesIO
 import json
+import base64
 
 from src.computer_vision.RESTConfig import analyze, detect, ocr
+from src.database.features.featureCRUD import FeatureCRUD
 
 # Replace <Subscription Key> with your valid subscription key.
 subscription_key = "9d5a6f15631142808a154f9916f0880a"
@@ -79,16 +81,20 @@ image_data2 = open(image_path2, "rb").read()
 #     analyze_url, headers=headers, params=params, data=image_data)
 # response.raise_for_status()
 
-# analysis = analyze(
-#     data=image_data,
-#     credentials={'base_url': vision_base_url, 'subscription_key': subscription_key},
-#     features_list=['Categories', 'Description', 'Color'])
+analysis = analyze(
+    data=image_data,
+    credentials={'base_url': vision_base_url, 'subscription_key': subscription_key},
+    features_list=['Categories', 'Description', 'Color'])
 # analysis = detect(
 #     data=image_data,
 #     credentials={'base_url': vision_base_url, 'subscription_key': subscription_key})
-analysis = ocr(
-    data=image_data2,
-    credentials={'base_url': vision_base_url, 'subscription_key': subscription_key},
-    language='en')
+# analysis = ocr(
+#     data=image_data2,
+#     credentials={'base_url': vision_base_url, 'subscription_key': subscription_key},
+#     language='en')
 
-print(json.dumps(analysis, indent=1))
+# print(json.dumps(analysis['description']['tags'], indent=1))
+
+dataAccess = FeatureCRUD('mongodb://admin:see2019@ds035747.mlab.com:35747/see-db-2019','see-db-2019')
+
+dataAccess.insertAnalysis('img1', base64.b64encode(image_data), analysis)
