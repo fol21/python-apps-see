@@ -49,8 +49,8 @@ from io import BytesIO
 import json
 import base64
 
-from src.computer_vision.RESTConfig import analyze, detect, ocr
-from src.database.features.featureCRUD import FeatureCRUD
+from .src.computer_vision.RESTConfig import analyze, detect, ocr
+from .src.database.features.featureCRUD import FeatureCRUD
 
 # Replace <Subscription Key> with your valid subscription key.
 subscription_key = "9d5a6f15631142808a154f9916f0880a"
