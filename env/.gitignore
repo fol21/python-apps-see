@@ -108,4 +108,4 @@ venv.bak/
 [Bb]in/
 Scripts/
 Include/
-pyenv.cfg
+./pyenv.cfg
