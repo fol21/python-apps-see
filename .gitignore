@@ -102,3 +102,10 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+#venv
+[Ll]ib/
+[Bb]in/
+Scripts/
+Include/
+pyenv.cfg

@@ -22,11 +22,12 @@ class FeatureCRUD(BaseCRUD):
             {
                 '$set': {
                     'categories': analysis['categories'],
-                    'tags': analysis['description']['tags'],
+                    'tags': analysis['description']['tags'],""
                     'captions': analysis['description']['captions']
                 }
             })
         return self
+
     
     def getAnalysis(self, name):
         return super().readDocument('Analysis', {'name': name})
