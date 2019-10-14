@@ -1,10 +1,6 @@
 import pymongo
 
 
-# client = pymongo.MongoClient("mongodb://administrador:see2018@ds027748.mlab.com:27748/see-2018-db")
-# mydb = client["see-2018-db"]
-
-
 def createDocument(db, collection, document):
     mycol = db[collection]
     mycol.insert_one(document)
@@ -28,6 +24,7 @@ class BaseCRUD:
     
     def __init__(self,url,dbname):
         self.db = pymongo.MongoClient(url)[dbname]
+        self.response = None
 
 
     def createDocument(self, collection, document):
