@@ -102,32 +102,83 @@
 
 ##### CV REST #####
 
-import jinja2
-from flask import Flask
-from src.webApp.featureREST import featureREST
+# import jinja2
+# from flask import Flask
+# from src.webApp.featureREST import featureREST
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
-my_loader = jinja2.ChoiceLoader([
-            app.jinja_loader,
-            jinja2.FileSystemLoader(['src/webApp/templates']),
-        ])
-app.jinja_loader = my_loader
+# my_loader = jinja2.ChoiceLoader([
+#             app.jinja_loader,
+#             jinja2.FileSystemLoader(['src/webApp/templates']),
+#         ])
+# app.jinja_loader = my_loader
 
-# Replace <Subscription Key> with your valid subscription key.
-subscription_key = "9d5a6f15631142808a154f9916f0880a"
-assert subscription_key
+# # Replace <Subscription Key> with your valid subscription key.
+# subscription_key = "9d5a6f15631142808a154f9916f0880a"
+# assert subscription_key
 
-# You must use the same region in your REST call as you used to get your
-# subscription keys. For example, if you got your subscription keys from
-# westus, replace "westcentralus" in the URI below with "westus".
+# # You must use the same region in your REST call as you used to get your
+# # subscription keys. For example, if you got your subscription keys from
+# # westus, replace "westcentralus" in the URI below with "westus".
 
-# Free trial subscription keys are generated in the "westcentralus" region.
-# If you use a free trial subscription key, you shouldn't need to change
-# this region.
-vision_base_url = "https://fol-computer-vision.cognitiveservices.azure.com"
+# # Free trial subscription keys are generated in the "westcentralus" region.
+# # If you use a free trial subscription key, you shouldn't need to change
+# # this region.
+# vision_base_url = "https://fol-computer-vision.cognitiveservices.azure.com"
 
-featureREST(app, vision_base_url, subscription_key)
+# featureREST(app, vision_base_url, subscription_key)
 
-if __name__ == '__main__':
-   app.run(port=8085,debug=True)
+# if __name__ == '__main__':
+#    app.run(port=8085,debug=True)
+
+#### IOT ####
+from src.iot.wmiAPI import getCPUTemperature
+import paho.mqtt.client as mqtt
+import argparse
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+
+parser.add_argument('--host', dest='host', action='store_const',
+                    const=lambda host: host, default='localhost', help='Broker Host Address(Default is localhost)')
+parser.add_argument('hostname', metavar='hostname', nargs='*',
+                    help='Host Name')
+parser.add_argument('--port', dest='port', action='store_const',
+                    const=int, default=1883, help='Broker Port (Default is 1883)')
+parser.add_argument('portnumber', metavar='portnumber', nargs='*',
+                    help='Port Number')
+parser.add_argument('--topic', dest='topic', action='store_const',
+                    const=lambda topics: topics.split(','), help='Add Topics')
+parser.add_argument('topics', metavar='topics', nargs='*',
+                    help='Topics to be Subscribed')
+
+args = parser.parse_args()
+print(args.host(args.hostname))
+print(args.port(args.portnumber))
+print(args.topic(args.topics))
+
+# The callback for when the client receives a CONNACK response from the server.
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    client.subscribe("test")
+
+# The callback for when a PUBLISH message is received from the server.
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+ str(msg.payload))
+
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
+
+client.connect("localhost", 1883, 60)
+
+# # Blocking call that processes network traffic, dispatches callbacks and
+# # handles reconnecting.
+# # Other loop*() functions are available that give a threaded interface and a
+# # manual interface.
+# client.loop_forever()
+
+
