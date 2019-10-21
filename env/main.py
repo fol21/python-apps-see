@@ -133,29 +133,28 @@
 #    app.run(port=8085,debug=True)
 
 #### IOT ####
-from src.iot.wmiAPI import getCPUTemperature
 import paho.mqtt.client as mqtt
 import argparse
+import re
+from src.iot.wmiAPI import getCPUTemperature
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 
+parser.add_argument('settings', metavar='settings', nargs='*',
+                    help='Host Name')
+parser.add_argument('--sub', dest='subscriber', action='store_true', help='Is a susbcriber')
+parser.add_argument('--pub', dest='publisher', action='store_true', help='Is a publisher')
 parser.add_argument('--host', dest='host', action='store_const',
                     const=lambda host: host, default='localhost', help='Broker Host Address(Default is localhost)')
-parser.add_argument('hostname', metavar='hostname', nargs='*',
-                    help='Host Name')
 parser.add_argument('--port', dest='port', action='store_const',
-                    const=int, default=1883, help='Broker Port (Default is 1883)')
-parser.add_argument('portnumber', metavar='portnumber', nargs='*',
-                    help='Port Number')
+                    const=lambda portnumber: int(portnumber), default=1883, help='Broker Port (Default is 1883)')
 parser.add_argument('--topic', dest='topic', action='store_const',
-                    const=lambda topics: topics.split(','), help='Add Topics')
-parser.add_argument('topics', metavar='topics', nargs='*',
-                    help='Topics to be Subscribed')
+                    const=lambda topics: topics, help='Add Topics')
 
 args = parser.parse_args()
-print(args.host(args.hostname))
-print(args.port(args.portnumber))
-print(args.topic(args.topics))
+host = args.host(args.settings[0])
+port = args.port(args.settings[1])
+topic = args.topic(args.settings[2])
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -163,7 +162,8 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("test")
+    if(args.subscriber):
+        client.subscribe(topic)
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -173,12 +173,18 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.connect("localhost", 1883, 60)
+client.connect(host, port, 60)
 
-# # Blocking call that processes network traffic, dispatches callbacks and
-# # handles reconnecting.
-# # Other loop*() functions are available that give a threaded interface and a
-# # manual interface.
-# client.loop_forever()
+if(args.publisher):
+        client.loop_start()
+        while True:
+                client.publish(topic, args.settings[3])
+
+# Blocking call that processes network traffic, dispatches callbacks and
+# handles reconnecting.
+# Other loop*() functions are available that give a threaded interface and a
+# manual interface.
+if(args.subscriber):
+        client.loop_forever()
 
 
