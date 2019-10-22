@@ -1,4 +1,4 @@
-from baseREST import BaseREST
+from .baseREST import BaseREST
 
 class FeatureREST(BaseREST):
     
